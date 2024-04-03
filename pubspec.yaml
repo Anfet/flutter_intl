@@ -1,0 +1,24 @@
+name: siberian_intl
+description: "siberian.pro internationalization library"
+version: 0.0.1
+homepage: https://git.siberian.pro/toplionkin/flutter_siberian_intl
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  logger: ^2.0.2+1
+  sprintf: ^7.0.0
+  intl: ^0.18.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+
+flutter:

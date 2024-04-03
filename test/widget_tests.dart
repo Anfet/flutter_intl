@@ -1,0 +1,47 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:siberian_intl/siberian_intl.dart';
+
+import 'data/translation_enums.dart';
+
+void main() {
+  var translator = Translator<Dictionary, Plurals>.setupWith(
+    defaultLanguageCode: 'en',
+    translations: [],
+    textToDictionaryResolver: (text) => Dictionary.values.byName(text),
+    textToPluralResolver: (text) => Plurals.values.byName(text),
+  );
+
+  translator.registerTranslation(
+    Translation<Dictionary, Plurals>(
+        languageCode: 'en', pluralResolver: (resId) => pluralsEn[resId], textResolver: (resId) => translationEn[resId], specResolver: specResolverEn),
+  );
+
+  translator.registerTranslation(
+    Translation<Dictionary, Plurals>(
+      languageCode: 'ru',
+      pluralResolver: (resId) => pluralsRu[resId],
+      textResolver: (resId) => translationRu[resId],
+      specResolver: specResolverRu,
+    ),
+  );
+
+  installTranslator(translator);
+
+  testWidgets('translated widget has correct title', (tester) async {
+    translator.languageCode = 'en';
+    await tester.pumpWidget(MaterialApp(home: Translated(child: () => Text(Dictionary.helloWorld.text))));
+    expect(find.text('Hello world'), findsOneWidget);
+  });
+
+  testWidgets('translated widget has correct title and changes', (tester) async {
+    translator.languageCode = 'en';
+    await tester.pumpWidget(MaterialApp(home: Translated(child: () => Text(Dictionary.helloWorld.text))));
+    expect(find.text('Hello world'), findsOneWidget);
+
+    translator.languageCode = 'ru';
+    await tester.pump();
+    expect(find.text('Привет мир'), findsOneWidget);
+  });
+}
