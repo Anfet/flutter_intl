@@ -1,25 +1,35 @@
 import 'package:siberian_intl/siberian_intl.dart';
 
-typedef TextResolver<T> = String? Function(T resId);
 typedef PluralSpecResolver = PluralSpec Function(int amount);
-typedef PluralResolver<P> = Plural? Function(P resId);
-typedef TextToDictionaryResolver<TranslatorDictionary> = TranslatorDictionary Function(String text);
-typedef TextToPluralResolver<TranslatorPlurals> = TranslatorPlurals Function(String text);
+typedef TextToDictionaryResolver<TranslatorDictionary> = TranslatorDictionary? Function(String text);
 
-abstract interface class TranslatorDictionary {}
+final _specPattern = RegExp(r'_(zero|one|two|many)$');
 
-abstract interface class TranslatorPlurals {}
+mixin TranslatorDictionary {
+  String get key;
 
-class Translation<Dictionary extends TranslatorDictionary, Plurals extends TranslatorPlurals> {
+  bool get isPlural => key.contains('_plural_') || key.endsWith('_plural');
+
+  PluralSpec get pluralSpec {
+    var ending = _specPattern.firstMatch(key)?.group(0);
+    return switch (ending) {
+      'zero' => PluralSpec.zero,
+      'one' => PluralSpec.one,
+      'two' => PluralSpec.two,
+      'many' => PluralSpec.many,
+      _ => throw LocalizationNotProvidedException("invalid plural spec '$ending' for '$key'"),
+    };
+  }
+}
+
+class Translation<Dictionary extends TranslatorDictionary> {
   final String languageCode;
-  final TextResolver<Dictionary> textResolver;
-  final PluralResolver<Plurals> pluralResolver;
+  final Map<Dictionary, dynamic> texts;
   final PluralSpecResolver specResolver;
 
   const Translation({
     required this.languageCode,
-    required this.textResolver,
-    required this.pluralResolver,
+    required this.texts,
     required this.specResolver,
   });
 }
@@ -58,8 +68,6 @@ extension TranslatedDictionaryExt<T extends TranslatorDictionary> on T {
   String get text => translator.translate(this);
 
   String format(args) => translator.translate(this, args);
-}
 
-extension TranslatedPluralsExt<T extends TranslatorPlurals> on T {
-  String get(int quantity) => translator.quantity(this, quantity);
+  String quantity(int amount) => translator.translate(this, amount);
 }

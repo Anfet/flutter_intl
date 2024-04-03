@@ -1,35 +1,35 @@
 import 'package:siberian_intl/siberian_intl.dart';
 
-enum Dictionary implements TranslatorDictionary {
+enum Dictionary with TranslatorDictionary {
   helloWorld,
   ok,
   formattedWorld,
   notFound,
   complexTranslation,
-  intFormatter,
+  days_plural,
+  ;
+
+  final String? _key;
+
+  @override
+  String get key => _key ?? name;
+
+  const Dictionary([this._key]);
 }
 
-enum Plurals implements TranslatorPlurals {
-  days,
-  seconds,
-}
-
-final translationEn = {
+final translationEn = <Dictionary, dynamic>{
   Dictionary.helloWorld: 'Hello world',
   Dictionary.ok: 'ok',
-  Dictionary.formattedWorld: 'Hello %s',
-  Dictionary.complexTranslation: '%s + %s = %s',
-  Dictionary.intFormatter: '%i + %i = %i',
-};
-
-final pluralsEn = {
-  Plurals.days: const Plural(zero: '%s days', one: '%s day', two: '%s days', many: '%s days'),
+  Dictionary.formattedWorld: 'Hello {{world}}',
+  Dictionary.complexTranslation: '{{0}} + {{1}} = {{2}}',
+  Dictionary.days_plural: {
+    'zero': '{{0}} days',
+    'one': '{{0}} day',
+    'two': '{{0}} days',
+    'many': '{{0}} days',
+  }
 };
 
 final translationRu = {
   Dictionary.helloWorld: 'Привет мир',
-};
-
-final pluralsRu = {
-  Plurals.days: const Plural(zero: '%s дней', one: '%s день', two: '%s дня', many: '%s дней'),
 };

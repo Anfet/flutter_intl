@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
 
   logger: ^2.0.2+1
-  sprintf: ^7.0.0
   intl: ^0.18.0
 
 dev_dependencies:

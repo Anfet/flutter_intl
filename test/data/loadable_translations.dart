@@ -1,22 +1,18 @@
-final loadableTranslationEn = <String, String>{
+final loadableTranslationEn = <String, dynamic>{
   'helloWorld': 'Hello world',
   'ok': 'ok',
-  'formattedWorld': 'Hello %s',
-  'complexTranslation': '%s + %s = %s',
-  'intFormatter': '%i + %i = %i',
-};
-
-final loadablePluralsEn = <String, Map<String, String>>{
-  'days': {
-    'zero': '%s days',
-    'one': '%s day',
-    'two': '%s days',
-    'many': '%s days',
+  'formattedWorld': 'Hello {{world}}',
+  'complexTranslation': '{{0}} + {{1}} = {{1}}',
+  'days_plural': {
+    'zero': '{{0}} days',
+    'one': '{{0}} day',
+    'two': '{{0}} days',
+    'many': '{{0}} days',
   },
   'seconds': {
-    'zero': '%s seconds',
-    'one': '%s second',
-    'two': '%s seconds',
-    'many': '%s seconds',
+    'zero': '{{0}} seconds',
+    'one': '{{0}} second',
+    'two': '{{0}} seconds',
+    'many': '{{0}} seconds',
   },
 };

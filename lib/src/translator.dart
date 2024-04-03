@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:intl/intl.dart';
 import 'package:siberian_intl/siberian_intl.dart';
-import 'package:sprintf/sprintf.dart';
 
 Translator? _translator;
 
@@ -12,11 +10,12 @@ void installTranslator(Translator other) => _translator = other;
 
 bool get isTranslatorSet => _translator != null;
 
-class Translator<Dictionary extends TranslatorDictionary, Plurals extends TranslatorPlurals> with ChangeNotifier {
-  final Map<String, Translation<Dictionary, Plurals>> _translations = {};
+final paramReg = RegExp(r'{{[\d\w]+}}');
 
-  final TextToDictionaryResolver dictionaryResolver;
-  final TextToPluralResolver pluralResolver;
+class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
+  final Map<String, Translation<Dictionary>> _translations = {};
+
+  final TextToDictionaryResolver<Dictionary> dictionaryResolver;
 
   String _defaultLanguageCode;
   String _languageCode;
@@ -36,7 +35,7 @@ class Translator<Dictionary extends TranslatorDictionary, Plurals extends Transl
 
   set locale(Locale locale) => languageCode = locale.languageCode;
 
-  Translation<Dictionary, Plurals> get _currentTranslation {
+  Translation<Dictionary> get _currentTranslation {
     final translation = _translations[_languageCode] ?? _translations[_defaultLanguageCode];
     if (translation == null) {
       throw LocalizationNotProvidedException(
@@ -46,7 +45,7 @@ class Translator<Dictionary extends TranslatorDictionary, Plurals extends Transl
     return translation;
   }
 
-  Translation<Dictionary, Plurals> get _defaultTranslation {
+  Translation<Dictionary> get _defaultTranslation {
     final translation = _translations[_defaultLanguageCode];
     assert(translation != null, 'no default translation $_defaultLanguageCode found!');
     return translation!;
@@ -57,21 +56,18 @@ class Translator<Dictionary extends TranslatorDictionary, Plurals extends Transl
   Translator._(
     this._languageCode,
     this.dictionaryResolver,
-    this.pluralResolver,
   ) : _defaultLanguageCode = _languageCode {
     TranslatedString.defaultLanguage = _languageCode;
   }
 
   factory Translator.setupWith({
     required String defaultLanguageCode,
-    required Iterable<Translation<Dictionary, Plurals>> translations,
+    required Iterable<Translation<Dictionary>> translations,
     required TextToDictionaryResolver<Dictionary> textToDictionaryResolver,
-    required TextToPluralResolver<Plurals> textToPluralResolver,
   }) {
-    var translator = Translator<Dictionary, Plurals>._(
+    var translator = Translator<Dictionary>._(
       defaultLanguageCode,
       textToDictionaryResolver,
-      textToPluralResolver,
     );
     for (var it in translations) {
       translator.registerTranslation(it);
@@ -79,65 +75,131 @@ class Translator<Dictionary extends TranslatorDictionary, Plurals extends Transl
     return translator;
   }
 
-  void registerTranslation(Translation<Dictionary, Plurals> translation) {
+  void registerTranslation(Translation<Dictionary> translation) {
     _translations[translation.languageCode] = translation;
     initializeDateFormatting(translation.languageCode);
   }
 
   void registerTranslationMap({
     required String languageCode,
-    Map<String, String>? translationMap,
-    Map<String, Map<String, String>>? pluralMap,
+    Map<String, dynamic>? translationMap,
     PluralSpecResolver? specResolver,
   }) {
-    Map<Dictionary, String> texts = (translationMap ?? {}).map((key, value) => MapEntry(dictionaryResolver(key), value));
-    Map<Plurals, Plural> plurals = (pluralMap ?? {}).map(
-      (key, value) => MapEntry(
-        pluralResolver(key),
-        Plural(
-          zero: value['zero'] ?? '',
-          one: value['one'] ?? '',
-          two: value['two'] ?? '',
-          many: value['many'] ?? '',
-        ),
-      ),
-    );
-    Translation<Dictionary, Plurals> translation = Translation(
+    Iterable<Dictionary> validKeys = translationMap?.keys
+            .map((key) {
+              Dictionary? dictionary = dictionaryResolver(key);
+              if (dictionary == null) {
+                debugPrint("No dictionary for key '$key'");
+              }
+              return dictionary;
+            })
+            .nonNulls
+            .cast<Dictionary>() ??
+        [];
+
+    final texts = Map<Dictionary, dynamic>.fromEntries(validKeys.map((e) => MapEntry(e, translationMap?[e.key])));
+
+    Translation<Dictionary> translation = Translation(
       languageCode: languageCode,
-      textResolver: (resId) => texts[resId],
-      pluralResolver: (resId) => plurals[resId],
+      texts: texts,
       specResolver: specResolver ?? defaultSpecResolver,
     );
     registerTranslation(translation);
   }
 
-  String translate(Dictionary resId, [arg]) {
-    final text = _currentTranslation.textResolver(resId) ?? _defaultTranslation.textResolver(resId) ?? '$resId';
-    return arg != null ? sprintf(text, arg is Iterable ? arg : [arg]) : text;
+  List<String> _argumentsToList(dynamic arg) {
+    if (arg == null) {
+      return [];
+    }
+
+    if (arg is Map) {
+      arg = (arg).values;
+    }
+
+    if (arg is Iterable) {
+      return (arg).map((e) => '$e').toList(growable: false);
+    }
+
+    return ['$arg'];
   }
 
-  String quantity(Plurals resId, int amount, {NumberFormat? formatter}) {
-    final plural = _currentTranslation.pluralResolver(resId) ?? _defaultTranslation.pluralResolver(resId);
-
-    if (plural == null) {
-      return '$resId($amount)';
+  Map<String, String> _argumentsToMap(dynamic arg) {
+    if (arg == null) {
+      return {};
     }
 
-    final spec = _currentTranslation.specResolver(amount);
-    final pattern = plural.get(spec);
-
-    if (pattern.isEmpty) {
-      throw QuantityLocalizationNotProvidedException("No quantity string provided for $languageCode/$resId");
+    if (arg is Map) {
+      return (arg).map((key, value) => MapEntry('$key', '$value'));
     }
 
-    String result = '';
-    if (pattern.contains("%s") && formatter != null) {
-      var amountText = formatter.format(amount).trim();
-      result = sprintf(pattern, [amountText]);
+    if (arg is Iterable) {
+      final map = <String, String>{};
+      for (var it in (arg).indexed) {
+        var (index, value) = it;
+        map['$index'] = value;
+      }
+
+      return map;
+    }
+
+    return {'0': '$arg'};
+  }
+
+  String _internalTranslate(String text, dynamic arg) {
+    var startIndex = 0;
+    while (startIndex < text.length) {
+      var matches = paramReg.allMatches(text, startIndex);
+      if (matches.isEmpty) {
+        break;
+      }
+
+      var match = matches.first;
+      var param = text.substring(match.start + 2, match.end - 2);
+      var index = int.tryParse(param);
+      String? value;
+      if (index != null) {
+        //param is integer
+        var args = _argumentsToList(arg);
+        value = args[index] ?? '';
+      } else {
+        //param is a text
+        var args = _argumentsToMap(arg);
+        value = args[param];
+      }
+
+      if (value != null) {
+        var replacementLength = value.length;
+        text = text.replaceRange(match.start, match.end, value);
+        startIndex = match.start + replacementLength;
+      } else {
+        startIndex = match.end;
+      }
+    }
+
+    return text;
+  }
+
+  String translate(Dictionary resId, [arg]) {
+    var translation = _currentTranslation;
+    dynamic data = translation.texts[resId];
+    if (data == null) {
+      translation = _defaultTranslation;
+      data = translation.texts[resId];
+    }
+
+    if (data == null) {
+      return '$resId';
+    }
+
+    String text;
+    if (resId.isPlural) {
+      var spec = translation.specResolver(arg as int);
+      var plural = data as Map<String, String>;
+      text = plural[spec.name] ?? '';
     } else {
-      result = sprintf(pattern, [amount]);
+      text = data as String;
     }
 
-    return result;
+    return _internalTranslate(text, arg);
   }
 }

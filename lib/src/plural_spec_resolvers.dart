@@ -30,12 +30,14 @@ PluralSpec specResolverRu(int amount) {
 PluralSpec defaultSpecResolver(int amount) {
   if (amount == 0) {
     return PluralSpec.zero;
+  } if (amount == 1) {
+    return PluralSpec.one;
   } else {
     amount = amount.abs();
     var remainder = amount.remainder(10);
+    var remainder100 = amount.remainder(100);
     var result = switch (remainder) {
       0 => PluralSpec.zero,
-      1 => PluralSpec.one,
       2 => PluralSpec.two,
       _ => PluralSpec.many,
     };
