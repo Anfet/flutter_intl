@@ -80,6 +80,14 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     initializeDateFormatting(translation.languageCode);
   }
 
+  void removeTranslation(String languageCode) {
+    _translations.remove(languageCode);
+  }
+
+  void clear() {
+    _translations.clear();
+  }
+
   void registerTranslationMap({
     required String languageCode,
     Map<String, dynamic>? translationMap,
@@ -194,7 +202,7 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     String text;
     if (resId.isPlural) {
       var spec = translation.specResolver(arg as int);
-      var plural = data as Map<String, String>;
+      var plural = data as Map<String, dynamic>;
       text = plural[spec.name] ?? '';
     } else {
       text = data as String;

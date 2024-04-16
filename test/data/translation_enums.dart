@@ -14,6 +14,7 @@ enum Dictionary with TranslatorDictionary {
   @override
   String get key => _key ?? name;
 
+  // ignore: unused_element
   const Dictionary([this._key]);
 }
 

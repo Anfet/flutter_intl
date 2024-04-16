@@ -1,0 +1,11 @@
+Key,ru,en
+helloWorld,привет мир,Hello world
+,,
+,,
+days_plural_zero,{{0}} дней,{{0}} days
+days_plural_one,{{0}} день,{{0}} day
+days_plural_two,{{0}} дня,{{0}} days
+days_plural_many,{{0}} дней,{{0}} days
+,,
+withCommas,"я,что-то,с запятыми","i'm something, with, commas"
+withQuites,"я,""что-то"",заквотил","I, ""quoted"" something"

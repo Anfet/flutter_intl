@@ -3,23 +3,10 @@ import 'package:siberian_intl/siberian_intl.dart';
 typedef PluralSpecResolver = PluralSpec Function(int amount);
 typedef TextToDictionaryResolver<TranslatorDictionary> = TranslatorDictionary? Function(String text);
 
-final _specPattern = RegExp(r'_(zero|one|two|many)$');
-
 mixin TranslatorDictionary {
   String get key;
 
-  bool get isPlural => key.contains('_plural_') || key.endsWith('_plural');
-
-  PluralSpec get pluralSpec {
-    var ending = _specPattern.firstMatch(key)?.group(0);
-    return switch (ending) {
-      'zero' => PluralSpec.zero,
-      'one' => PluralSpec.one,
-      'two' => PluralSpec.two,
-      'many' => PluralSpec.many,
-      _ => throw LocalizationNotProvidedException("invalid plural spec '$ending' for '$key'"),
-    };
-  }
+  bool get isPlural => key.endsWith('_plural');
 }
 
 class Translation<Dictionary extends TranslatorDictionary> {
