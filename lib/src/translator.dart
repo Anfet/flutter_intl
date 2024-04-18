@@ -26,8 +26,7 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     final lowerCaseCode = code.toLowerCase();
     if (_languageCode != lowerCaseCode) {
       _languageCode = lowerCaseCode;
-      notifyListeners();
-      // WidgetsFlutterBinding.ensureInitialized().reassembleApplication();
+      notifyUpdated();
     }
   }
 
@@ -86,6 +85,10 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
 
   void clear() {
     _translations.clear();
+  }
+
+  void notifyUpdated({bool hard = false}) {
+    hard ? WidgetsFlutterBinding.ensureInitialized().reassembleApplication() : notifyListeners();
   }
 
   void registerTranslationMap({
