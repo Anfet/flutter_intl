@@ -13,6 +13,10 @@ bool get isTranslatorSet => _translator != null;
 final paramReg = RegExp(r'{{[\d\w]+}}');
 
 class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
+  /// hard updates force the app to be reassembled. Not very efficient. Consider using [TranslatedWidget] for screens or widgets requiring translations.
+  /// defaults to false
+  final bool useHardUpdates;
+
   final Map<String, Translation<Dictionary>> _translations = {};
 
   final TextToDictionaryResolver<Dictionary> dictionaryResolver;
@@ -26,7 +30,7 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     final lowerCaseCode = code.toLowerCase();
     if (_languageCode != lowerCaseCode) {
       _languageCode = lowerCaseCode;
-      notifyUpdated();
+      notifyUpdated(hard: useHardUpdates);
     }
   }
 
@@ -55,18 +59,22 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
   Translator._(
     this._languageCode,
     this.dictionaryResolver,
+    this.useHardUpdates,
   ) : _defaultLanguageCode = _languageCode {
     TranslatedString.defaultLanguage = _languageCode;
   }
 
+  ///Default translator initialization.
   factory Translator.setupWith({
     required String defaultLanguageCode,
     required Iterable<Translation<Dictionary>> translations,
     required TextToDictionaryResolver<Dictionary> textToDictionaryResolver,
+    bool useHardUpdates = false,
   }) {
     var translator = Translator<Dictionary>._(
       defaultLanguageCode,
       textToDictionaryResolver,
+      useHardUpdates,
     );
     for (var it in translations) {
       translator.registerTranslation(it);
@@ -87,8 +95,11 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     _translations.clear();
   }
 
-  void notifyUpdated({bool hard = false}) {
-    hard ? WidgetsFlutterBinding.ensureInitialized().reassembleApplication() : notifyListeners();
+  ///notifies all the interested widgets that translator values has changed, or require change.
+  ///
+  ///[hard] - if true, reassembles the app, defaults to [useHardUpdates] constructor param
+  void notifyUpdated({bool? hard}) {
+    (hard ?? useHardUpdates) ? WidgetsFlutterBinding.ensureInitialized().reassembleApplication() : notifyListeners();
   }
 
   void registerTranslationMap({
