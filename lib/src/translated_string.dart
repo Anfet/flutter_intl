@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:siberian_intl/siberian_intl.dart';
 
 @immutable
 class TranslatedString {
@@ -17,4 +18,6 @@ class TranslatedString {
   TranslatedString(Map? texts) {
     _texts = texts?.map((key, value) => MapEntry('$key', '$value')) ?? {};
   }
+
+  String get translated => this[translator.languageCode];
 }
