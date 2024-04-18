@@ -1,18 +1,19 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 sealed class TranslationLoaderSource<T> {
-  Future<T> get data;
+  FutureOr<T> get data;
 
-  Future<String> get string;
+  FutureOr<String> get string;
 
-  static TranslationLoaderSource uint8list(Future<Uint8List> data) => TranslationLoaderSourceUint8List._(data);
+  static TranslationLoaderSource uint8list(FutureOr<Uint8List> data) => TranslationLoaderSourceUint8List._(data);
 
-  static TranslationLoaderSource byteData(Future<ByteData> data) => TranslationLoaderSourceByteData._(data);
+  static TranslationLoaderSource byteData(FutureOr<ByteData> data) => TranslationLoaderSourceByteData._(data);
 
-  static TranslationLoaderSource text(Future<String> data) => TranslationLoaderSourceString._(data);
+  static TranslationLoaderSource text(FutureOr<String> data) => TranslationLoaderSourceString._(data);
 
   static TranslationLoaderSource asset(String assetName) => TranslationLoaderSourceAsset._(assetName);
 }
@@ -20,21 +21,21 @@ sealed class TranslationLoaderSource<T> {
 @immutable
 class TranslationLoaderSourceUint8List implements TranslationLoaderSource<Uint8List> {
   @override
-  final Future<Uint8List> data;
+  final FutureOr<Uint8List> data;
 
   const TranslationLoaderSourceUint8List._(this.data);
 
   @override
-  Future<String> get string => data.then((list) => utf8.decode(list));
+  FutureOr<String> get string => Future.value(data).then((list) => utf8.decode(list));
 }
 
 @immutable
 class TranslationLoaderSourceByteData implements TranslationLoaderSource<ByteData> {
   @override
-  final Future<ByteData> data;
+  final FutureOr<ByteData> data;
 
   @override
-  Future<String> get string => data.then((bytes) => utf8.decode(bytes.buffer.asUint8List()));
+  FutureOr<String> get string => Future.value(data).then((bytes) => utf8.decode(bytes.buffer.asUint8List()));
 
   const TranslationLoaderSourceByteData._(this.data);
 }
@@ -42,10 +43,10 @@ class TranslationLoaderSourceByteData implements TranslationLoaderSource<ByteDat
 @immutable
 class TranslationLoaderSourceString implements TranslationLoaderSource<String> {
   @override
-  final Future<String> data;
+  final FutureOr<String> data;
 
   @override
-  Future<String> get string => data;
+  FutureOr<String> get string => data;
 
   const TranslationLoaderSourceString._(this.data);
 }
@@ -53,10 +54,10 @@ class TranslationLoaderSourceString implements TranslationLoaderSource<String> {
 @immutable
 class TranslationLoaderSourceAsset implements TranslationLoaderSource<String> {
   @override
-  final Future<String> data;
+  final FutureOr<String> data;
 
   @override
-  Future<String> get string => data;
+  FutureOr<String> get string => data;
 
   TranslationLoaderSourceAsset._(String assetName) : data = rootBundle.loadString(assetName);
 }
