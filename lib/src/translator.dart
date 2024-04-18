@@ -202,10 +202,11 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     String text;
     if (resId.isPlural) {
       var spec = translation.specResolver(arg as int);
+      assert(data is Map<String, dynamic>, "'$resId' value '$data' is not Map<String, dynamic>");
       var plural = data as Map<String, dynamic>;
       text = plural[spec.name] ?? '';
     } else {
-      text = data as String;
+      text = '$data';
     }
 
     return _internalTranslate(text, arg);
