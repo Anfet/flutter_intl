@@ -23,13 +23,13 @@ void main() {
 
   testWidgets('translated widget has correct title', (tester) async {
     translator.languageCode = 'en';
-    await tester.pumpWidget(MaterialApp(home: Translated(child: () => Text(Dictionary.helloWorld.text))));
+    await tester.pumpWidget(MaterialApp(home: TranslatedWidget(builder: (context, child) => Text(Dictionary.helloWorld.text))));
     expect(find.text('Hello world'), findsOneWidget);
   });
 
   testWidgets('translated widget has correct title and changes', (tester) async {
     translator.languageCode = 'en';
-    await tester.pumpWidget(MaterialApp(home: Translated(child: () => Text(Dictionary.helloWorld.text))));
+    await tester.pumpWidget(MaterialApp(home: TranslatedWidget(builder: (context, child) => Text(Dictionary.helloWorld.text))));
     expect(find.text('Hello world'), findsOneWidget);
 
     translator.languageCode = 'ru';

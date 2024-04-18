@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:siberian_intl/siberian_intl.dart';
 
-class Translated extends StatelessWidget {
+class TranslatedWidget extends StatelessWidget {
   final Translator? customTranslator;
-  final ValueGetter<Widget> child;
+  final TransitionBuilder builder;
+  final Widget? child;
 
-  const Translated({
+  const TranslatedWidget({
     super.key,
     this.customTranslator,
-    required this.child,
+    required this.builder,
+    this.child,
   });
 
   @override
@@ -19,7 +21,8 @@ class Translated extends StatelessWidget {
 
     return ListenableBuilder(
       listenable: customTranslator ?? translator,
-      builder: (context, _) => child(),
+      builder: builder,
+      child: child,
     );
   }
 }
