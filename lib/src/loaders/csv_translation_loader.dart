@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:csv/csv.dart';
-import 'package:siberian_intl/siberian_intl.dart';
-import 'package:siberian_intl/src/loaders/translation_loader.dart';
+import 'package:flutter_intl/flutter_intl.dart';
+import 'package:flutter_intl/src/loaders/translation_loader.dart';
 
 final _pluralPattern = RegExp(r'_plural_(zero|one|two|many)$');
 final _specPattern = RegExp(r'(zero|one|two|many)$');

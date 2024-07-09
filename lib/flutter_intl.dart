@@ -1,4 +1,4 @@
-library siberian_intl;
+library flutter_intl;
 
 export 'src/exceptions.dart';
 export 'src/plural_spec_resolvers.dart';

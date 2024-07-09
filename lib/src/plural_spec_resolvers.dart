@@ -1,4 +1,4 @@
-import 'package:siberian_intl/src/types.dart';
+import 'package:flutter_intl/src/types.dart';
 
 PluralSpec specResolverEn(int amount) {
   amount = amount.abs();

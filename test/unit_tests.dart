@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:siberian_intl/generated/assets.dart';
-import 'package:siberian_intl/siberian_intl.dart';
-import 'package:siberian_intl/src/loaders/csv_translation_loader.dart';
-import 'package:siberian_intl/src/loaders/json_translation_loader.dart';
-import 'package:siberian_intl/src/loaders/sources/translation_loader_source.dart';
+import 'package:flutter_intl/generated/assets.dart';
+import 'package:flutter_intl/flutter_intl.dart';
+import 'package:flutter_intl/src/loaders/csv_translation_loader.dart';
+import 'package:flutter_intl/src/loaders/json_translation_loader.dart';
+import 'package:flutter_intl/src/loaders/sources/translation_loader_source.dart';
 
 import 'data/translation_enums.dart';
 

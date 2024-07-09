@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:siberian_intl/siberian_intl.dart';
+import 'package:flutter_intl/flutter_intl.dart';
 
 class TranslatedWidget extends StatelessWidget {
   final Translator? customTranslator;

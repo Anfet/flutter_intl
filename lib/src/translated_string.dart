@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:siberian_intl/siberian_intl.dart';
+import 'package:flutter_intl/flutter_intl.dart';
 
 @immutable
 class TranslatedString {

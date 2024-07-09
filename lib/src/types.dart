@@ -1,4 +1,4 @@
-import 'package:siberian_intl/siberian_intl.dart';
+import 'package:flutter_intl/flutter_intl.dart';
 
 typedef PluralSpecResolver = PluralSpec Function(int amount);
 typedef TextToDictionaryResolver<TranslatorDictionary> = TranslatorDictionary? Function(String text);

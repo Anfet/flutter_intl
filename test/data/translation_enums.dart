@@ -1,4 +1,4 @@
-import 'package:siberian_intl/siberian_intl.dart';
+import 'package:flutter_intl/flutter_intl.dart';
 
 enum Dictionary with TranslatorDictionary {
   helloWorld,

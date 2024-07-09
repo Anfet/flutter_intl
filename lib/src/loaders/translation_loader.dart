@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:siberian_intl/src/loaders/sources/translation_loader_source.dart';
-import 'package:siberian_intl/src/types.dart';
+import 'package:flutter_intl/src/loaders/sources/translation_loader_source.dart';
+import 'package:flutter_intl/src/types.dart';
 
 abstract class TranslationLoader<T extends TranslatorDictionary> {
   const TranslationLoader();

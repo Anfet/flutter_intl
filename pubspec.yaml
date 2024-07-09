@@ -1,7 +1,7 @@
-name: siberian_intl
-description: "siberian.pro internationalization library"
-version: 0.0.1
-homepage: https://git.siberian.pro/toplionkin/flutter_siberian_intl
+name: flutter_intl
+description: "another internationalization library"
+version: 0.0.2
+homepage: https://github.com/Anfet/flutter_intl.git
 
 environment:
   sdk: '>=3.3.0 <4.0.0'

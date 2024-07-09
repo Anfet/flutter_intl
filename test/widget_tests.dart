@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:siberian_intl/siberian_intl.dart';
+import 'package:flutter_intl/flutter_intl.dart';
 
 import 'data/translation_enums.dart';
 
