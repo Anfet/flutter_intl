@@ -1,6 +1,6 @@
 name: flutter_intl
 description: "another internationalization library"
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/Anfet/flutter_intl.git
 
 environment:
@@ -10,9 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  logger: ^2.0.2+1
-  intl: ^0.18.0
+ 
+  intl: ^0.19.0
   csv: ^6.0.0
 
 dev_dependencies:
