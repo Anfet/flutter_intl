@@ -16,6 +16,8 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
   /// hard updates force the app to be reassembled. Not very efficient. Consider using [TranslatedWidget] for screens or widgets requiring translations.
   /// defaults to false
   final bool useHardUpdates;
+  final bool emptyKeysUseDefault;
+  final bool useKeyIfNoData;
 
   final Map<String, Translation<Dictionary>> _translations = {};
 
@@ -60,6 +62,8 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     this._languageCode,
     this.dictionaryResolver,
     this.useHardUpdates,
+    this.emptyKeysUseDefault,
+    this.useKeyIfNoData,
   ) : _defaultLanguageCode = _languageCode {
     TranslatedString.defaultLanguage = _languageCode;
   }
@@ -70,11 +74,15 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     required Iterable<Translation<Dictionary>> translations,
     required TextToDictionaryResolver<Dictionary> textToDictionaryResolver,
     bool useHardUpdates = false,
+    bool emptyKeysUseDefault = false,
+    bool useKeyIfNoData = false,
   }) {
     var translator = Translator<Dictionary>._(
       defaultLanguageCode,
       textToDictionaryResolver,
       useHardUpdates,
+      emptyKeysUseDefault,
+      useKeyIfNoData,
     );
     for (var it in translations) {
       translator.registerTranslation(it);
@@ -204,12 +212,12 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
   String translate(Dictionary resId, [arg]) {
     var translation = _currentTranslation;
     dynamic data = translation.texts[resId];
-    if (data == null) {
+    if (data == null || (data.toString().isEmpty && emptyKeysUseDefault)) {
       translation = _defaultTranslation;
       data = translation.texts[resId];
     }
 
-    if (data == null) {
+    if (data == null || (data.toString().isEmpty && useKeyIfNoData)) {
       return '$resId';
     }
 
