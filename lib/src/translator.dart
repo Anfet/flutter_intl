@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_intl/flutter_intl.dart';
+import 'package:intl/intl.dart';
 
 Translator? _translator;
 
@@ -209,7 +210,7 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
     return text;
   }
 
-  String translate(Dictionary resId, [arg]) {
+  String translate(Dictionary resId, [arg, NumberFormat? formatter]) {
     var translation = _currentTranslation;
     dynamic data = translation.texts[resId];
     if (data == null || (data.toString().isEmpty && emptyKeysUseDefault)) {
@@ -227,10 +228,11 @@ class Translator<Dictionary extends TranslatorDictionary> with ChangeNotifier {
       assert(data is Map<String, dynamic>, "'$resId' value '$data' is not Map<String, dynamic>");
       var plural = data as Map<String, dynamic>;
       text = plural[spec.name] ?? '';
+      var argText = formatter?.format(arg) ?? arg;
+      return _internalTranslate(text, argText);
     } else {
       text = '$data';
+      return _internalTranslate(text, arg);
     }
-
-    return _internalTranslate(text, arg);
   }
 }

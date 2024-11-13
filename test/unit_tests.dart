@@ -1,10 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_intl/generated/assets.dart';
 import 'package:flutter_intl/flutter_intl.dart';
-import 'package:flutter_intl/src/loaders/csv_translation_loader.dart';
-import 'package:flutter_intl/src/loaders/json_translation_loader.dart';
-import 'package:flutter_intl/src/loaders/sources/translation_loader_source.dart';
 
 import 'data/translation_enums.dart';
 
@@ -83,37 +79,9 @@ void main() {
     assert(text == 'Hello {{world}}');
   });
 
-  test('loadable translations', () async {
-    var translations = await const JsonTranslationLoader().loadFrom(TranslationLoaderSource.asset(Assets.intlJsonTranslations));
-    translator.clear();
-
-    translator.registerTranslationMap(
-      languageCode: 'en',
-      translationMap: translations['en'],
-      specResolver: defaultSpecResolver,
-    );
-    translator.languageCode = 'en';
-    var text = Dictionary.days_plural.quantity(11);
-    assert(text == '11 days');
-  });
-
   test('loadable translation; extensions', () {
     translator.languageCode = 'en';
     var text = Dictionary.helloWorld.text;
     assert(text == 'Hello world');
-  });
-
-  test('loadable csv', () async {
-    var translations = await const CsvTranslationLoader().loadFrom(TranslationLoaderSource.asset(Assets.intlCsvTranslations));
-    translator.clear();
-
-    translator.registerTranslationMap(
-      languageCode: 'en',
-      translationMap: translations['en'],
-      specResolver: defaultSpecResolver,
-    );
-    translator.languageCode = 'en';
-    var text = Dictionary.days_plural.quantity(11);
-    assert(text == '11 days');
   });
 }

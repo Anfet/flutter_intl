@@ -1,6 +1,6 @@
 name: flutter_intl
 description: "another internationalization library"
-version: 0.0.4
+version: 0.0.4+1
 homepage: https://github.com/Anfet/flutter_intl.git
 
 environment:
